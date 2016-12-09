@@ -1,0 +1,14 @@
+import numpy as np
+def pca(X):
+    m = len(X)
+    Sigma = X.conj().T.dot(X) / m
+    U,S,Vh =np.linalg.svd(Sigma)
+    return U,S
+def featureNormalize(X):
+    mu = X.mean(axis=0)
+    X_norm = X- mu
+    sigma = X.std(axis=0)
+    return X_norm/sigma
+def projectData(X, U, K):
+    U_reduce = U[:,0:K]
+    return X.dot(U_reduce)

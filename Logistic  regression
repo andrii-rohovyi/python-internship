@@ -1,0 +1,7 @@
+import numpy as np
+def computeLogisticCost(X, y, theta):
+    m = len(y)
+    return ((1 / m) * np.sum( - y * np.log(sigmoid(X.dot(theta))) - (1 - y) * np.log(1 - sigmoid(X.dot(theta))))) , \
+    X.conj().T.dot(sigmoid(X.dot(theta)) - y) / m 
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z) )

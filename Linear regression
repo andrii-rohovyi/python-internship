@@ -1,0 +1,4 @@
+def computeLinearCost(X, y, theta):
+    m = len(y)
+    d = X.dot(theta) - y
+    return d.conj().T.dot(d) / (2 * m) ,  X.conj().T.dot(X.dot(theta) - y) / m
