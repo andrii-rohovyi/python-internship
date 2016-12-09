@@ -1,8 +1,8 @@
 import numpy as np
-def computeGenerelizedCost(X, y, theta):
+def Generelized(X, y, theta, l):
     m = len(y)
     d = g(X.dot(theta)) - y
-    return  d.conj().T.dot(d) / (2 * m) , \
-    X.conj().T.dot(g(X.dot(theta)) - y) / m 
+    return  d.conj().T.dot(d) / (2 * m) + l * np.sum(theta[1:len(theta)] ** 2) / (2 * m) , \
+    X.conj().T.dot(g(X.dot(theta)) - y) / m + l * np.concatenate((np.array([[0]]),theta[1:len(theta)])) / m   #cost function, gradient
 def g(z):
     return np.exp(z) # 1 / (1 + np.exp(-z) ) #z  # model function

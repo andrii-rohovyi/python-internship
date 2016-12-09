@@ -1,10 +1,10 @@
 import numpy
-def gradientDescent (X, y, theta, alpha, num_iters,epsilon, computeCost ):
+def gradientDescent (X, y, theta, alpha, num_iters, epsilon, model, l ):
     m = len(y)
     i = 0
-    while ((i<num_iters) and (computeCost(X, y, theta)[0] >epsilon)):
+    while ((i<num_iters) and (model(X, y, theta, l)[0] >epsilon)):
         i +=1
-        dJ = computeCost(X, y, theta)[1];
+        dJ = model(X, y, theta, l)[1];
         theta = theta - alpha * dJ;
     return  theta
 

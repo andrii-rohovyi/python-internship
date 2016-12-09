@@ -1,0 +1,36 @@
+import numpy as np
+data_location ='E:\dataset/data.xlsx'
+data = Data(data_location)
+n = data.shape[1]
+m = len(data)
+if(n==2):
+    X = np.concatenate((np.ones((m, 1)), data[:, [0]]), axis = 1)
+else:
+    X = np.concatenate((np.ones((m, 1)), data[:, 0:n-1]), axis = 1)
+y = data[:, [n-1]]
+alpha = 0.01
+iterations = 1500
+epsilon = 0.5
+l = 1
+
+'''Linear rgression'''
+print("Linear regression")
+theta = np.zeros((n, 1))
+theta = gradientDescent(X, y, theta, alpha, iterations, epsilon, Linear, l)
+print("Theta = " , theta.conj().T)
+print("Linear regression cost function = " , Linear(X, y, theta, l )[0],'\n')
+
+'''Logistic regression'''
+print("Logistic regression")
+theta = np.zeros((n, 1))
+theta = gradientDescent(X, y, theta, alpha, iterations, epsilon, Logistic, l)
+print("Theta = " , theta.conj().T)
+print("Linear logistic cost function = " , Logistic(X, y, theta, l)[0],'\n')
+
+'''Generalized linear model'''
+print("Generalized linear model")
+theta = np.zeros((n, 1))
+theta = gradientDescent(X, y, theta, alpha, iterations, epsilon, Generelized, l)
+print("Theta = " , theta.conj().T)
+print("Generalized linear model cost function = " , Generelized(X, y, theta, l)[0],'\n')
+

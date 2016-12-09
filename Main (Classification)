@@ -1,0 +1,21 @@
+import numpy as np
+data_location ='E:\dataset/data1.xlsx'
+data = Data(data_location)
+n = data.shape[1]
+m = len(data)
+if(n==2):
+    X = data[:, [n-2]]
+else:
+    X =  data[:, [0,n-2]]
+y = data[:, [n-1]]
+test_count = 80
+X_train = X[:test_count,:]
+X_test = X[test_count:,:]
+y_train = y[:test_count]
+y_test = y[test_count:]
+
+'''GDA'''
+print('GDA')
+d = np.abs(y_test.T -GDA(X_train,y_train,X_test)).T
+print('(sum(y-predict) ^ 2) /  m =',d.conj().T.dot(d) / (len(y_test)))
+
