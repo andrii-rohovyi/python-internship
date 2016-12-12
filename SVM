@@ -1,5 +1,145 @@
-import numpy as np
+import numpy as np, random
+
 def gaussianKernel(x1, x2, sigma):
-    x1 = x1[:]
-    x2 = x2[:]
     return np.exp(-np.sum((x1 - x2) ** 2) / (2 * sigma * sigma))
+    
+def linearKernel(x1, x2):
+    return x2[:].T.dot(x2[:])
+
+class Model:
+    def __init__(self, X, y, kernelFunction, b, alphas, w, sigma):
+        self.X = X
+        self.y = y
+        self.kernelFunction = kernelFunction
+        self.b = b
+        self.alphas = alphas
+        self.w = w
+        self.sigma = sigma
+        
+def svmTrain(X, Y, C, kernelFunction, sigma, tol, max_passes):
+    m = X.shape[0]
+    n = X.shape[1]
+    for i in range(m):
+        if(Y[i] == 0):
+            Y[i] = -1.0
+    alphas = np.zeros((m, 1))
+    b = 0
+    E = np.zeros((m, 1))
+    passes = 0
+    eta = 0
+    L = 0
+    H = 0
+    if (kernelFunction.__name__ == 'linearKernel'):
+        K = X.dot(X.T)
+    elif (kernelFunction.__name__ == 'gaussianKernel'):
+        X2 = np.sum(X ** 2, axis = 1)
+        X3 = np.zeros((X2.shape[0], X2.shape[0]))
+        for i in range(X2.shape[0]):
+            for j in range(X2.shape[0]):
+                X3[i,j] = X2[i] + X2[j]
+        K = X3 - 2 * (X.dot(X.T))
+        K = kernelFunction(1, 0, sigma) ** K 
+    else:
+        K = np.zeros((m))
+        for i in range(m):
+            for j in range(m):
+                K[i, j] = kernelFunction(X[i, :].T, X[j, :].T)
+                K[i, j] = K[j, i]
+    dots = 12
+    while(passes < max_passes):
+        num_changed_alphas = 0
+        for i in range(m):
+            E[i] = b + np.sum(alphas.T * Y.T * K[:, i]) - Y[i]
+            
+            if( ((Y[i] * E[i] < -tol) and (alphas[i] < C))  or ((E[i] * Y[i] > tol) and (alphas[i] > 0) ) ):
+                j = int(np.ceil((m - 1) * random.random()))
+                while(j == i):
+                    j = int(np.ceil((m - 1) * random.random()))
+                
+                E[j] = b + np.sum(alphas.T * Y.T * K[:, j]) - Y[j]
+                alphas_i_old = 0 + alphas[i]
+                alphas_j_old = 0 + alphas[j]
+               
+                if (Y[i] == Y[j]):
+                    L = np.maximum(0, alphas[j] + alphas[i] - C)
+                    H = np.minimum(C, alphas[j] + alphas[i])
+                else:
+                    L = np.maximum(0, alphas[j] - alphas[i])
+                    H = np.minimum(C, C + alphas[j] - alphas[i])
+                if (L == H):
+                    continue
+                eta = 2 * K[i, j] - K[i, i] - K[j, j]
+                if(eta >= 0):
+                    continue
+                alphas[j] = alphas[j] - (Y[j] * (E[i] - E[j])) / eta
+                alphas[j] = np.minimum(H, alphas[j])
+                alphas[j] = np.maximum(L, alphas[j])
+                if (np.abs(alphas[j] - alphas_j_old) < tol):
+                    alphas[j] = alphas_j_old + 0
+                    continue
+                alphas[i] = alphas[i] + Y[i] * Y[j] * ( alphas_j_old - alphas[j])
+                b1 = b - E[i] - Y[i] * (alphas[i] - alphas_i_old) * K[i, j].T - Y[j] * (alphas[j] - alphas_j_old) * K[i, j].T
+                b2 = b - E[j] - Y[i] * (alphas[i] - alphas_i_old) * K[i, j].T - Y[j] * (alphas[j] - alphas_j_old) * K[j, j].T
+                if((0 < alphas[i]) and (alphas[i] < C)):
+                    b = 0 + b1
+                elif ((0 < alphas[j]) and (alphas[j] < C)):
+                    b = 0 + b2
+                else:
+                    b = (b1 + b2) / 2
+                num_changed_alphas = num_changed_alphas + 1
+        if( num_changed_alphas == 0):
+            passes = passes + 1
+        else:
+            passes = 0
+        dots = dots + 1
+        if(dots > 78):
+            dots = 0
+    idx = alphas > 0
+    model_X = np.zeros((np.sum(idx), X.shape[1]))
+    model_Y = np.zeros((np.sum(idx)))
+    model_alphas = np.zeros((np.sum(idx)))
+    k = 0
+    for i in range(idx.shape[0]):
+        if (idx[i] == True):
+            model_X[k, :] = X[i, :]
+            model_Y[k] = Y[i]
+            model_alphas[k] = alphas[i]
+            k += 1
+    model = Model(model_X, model_Y, kernelFunction,  b, model_alphas, (alphas * Y).T.dot(X).T, sigma)
+    return model
+
+def svmPredict(model, X):
+    m = X.shape[0]
+    p = np.zeros((m, 1))
+    pred = np.zeros((m, 1))
+    if (model.kernelFunction.__name__== 'linearKernel'):
+        p = X.dot(model.w) + model.b
+    elif (model.kernelFunction.__name__ == 'gaussianKernel'):
+        X1 = np.sum(X ** 2, axis = 1)
+        X2 = np.sum(model.X ** 2, axis = 1)
+        X3 = np.zeros((X1.shape[0], X2.shape[0]))
+        for i in range(X1.shape[0]):
+            for j in range(X2.shape[0]):
+                X3[i,j] = X1[i] + X2[j]
+        K = X3 - 2 * (X.dot(model.X.T))
+        K = model.kernelFunction(1, 0, sigma) ** K 
+        K = model.y.T * K
+        K = model.alphas.T * K
+        p =np.sum(K, axis = 1)
+    else:
+        for i in range(m):
+            prediction = 0
+            for j in range(model.X.shape[0]):
+                prediction = prediction + model.alphas[j] * model.y[j] * model.kernelFunction(X[i,:].T, model.X[j,:].T, model.sigma)
+            p[i] = prediction + model.b
+    for i in range(p.shape[0]):
+        if(p[i] >= 0):
+            pred[i] = 1
+        else:
+            pred[i] = 0
+            
+    return pred
+
+
+    
+
