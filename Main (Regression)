@@ -3,34 +3,63 @@ data_location ='E:\dataset/data.xlsx'
 data = Data(data_location)
 n = data.shape[1]
 m = len(data)
-if(n==2):
+if(n == 2):
     X = np.concatenate((np.ones((m, 1)), data[:, [0]]), axis = 1)
 else:
     X = np.concatenate((np.ones((m, 1)), data[:, 0:n-1]), axis = 1)
 y = data[:, [n-1]]
-alpha = 0.01
-iterations = 1500
-epsilon = 0.5
-l = 1
-
-'''Linear rgression'''
-print("Linear regression")
+alpha = 0.01 #Gradient Descent step
+iterations = 1500 #max iterations
+epsilon = 0.5 
+l = 1 #Regularization parametr
 theta = np.zeros((n, 1))
-theta = gradientDescent(X, y, theta, alpha, iterations, epsilon, Linear, l)
-print("Theta = " , theta.conj().T)
-print("Linear regression cost function = " , Linear(X, y, theta, l )[0],'\n')
-
-'''Logistic regression'''
-print("Logistic regression")
-theta = np.zeros((n, 1))
-theta = gradientDescent(X, y, theta, alpha, iterations, epsilon, Logistic, l)
-print("Theta = " , theta.conj().T)
-print("Linear logistic cost function = " , Logistic(X, y, theta, l)[0],'\n')
 
 '''Generalized linear model'''
 print("Generalized linear model")
-theta = np.zeros((n, 1))
-theta = gradientDescent(X, y, theta, alpha, iterations, epsilon, Generelized, l)
-print("Theta = " , theta.conj().T)
-print("Generalized linear model cost function = " , Generelized(X, y, theta, l)[0],'\n')
+def g(z): #function of generalized model 
+    return np.exp(z)
+    
+print("Without Regularization")
+Generalized_linear_model_reg = GLM(g, theta)
+Generalized_linear_model_reg.gradientDescent(X, y, alpha, iterations, epsilon, 0)
+print("Theta = " , Generalized_linear_model_reg.theta.conj().T)
+print("Generalized linear model cost function = " , Generalized_linear_model_reg.costFunction(X, y,  0),'\n')
+
+print("With Regularization ( lambda =", l,')')
+Generalized_linear_model_reg = GLM(g, theta)
+Generalized_linear_model_reg.gradientDescent(X, y, alpha, iterations, epsilon, l)
+print("Theta = " , Generalized_linear_model_reg.theta.conj().T)
+print("Generalized linear model cost function = " , Generalized_linear_model_reg.costFunction(X, y,  l),'\n')
+
+
+'''Linear regression'''
+print("Linear regression")
+
+print("Without Regularization")
+Linear_model =  Linear_regression(theta)
+Linear_model.gradientDescent(X, y, alpha, iterations, epsilon, 0)
+print("Theta = " , Linear_model.theta.conj().T)
+print("Linear regression cost function = " , Linear_model.costFunction(X, y, 0),'\n')
+
+print("With Regularization ( lambda =", l,')')
+Linear_model_reg =  Linear_regression(theta)
+Linear_model_reg.gradientDescent(X, y, alpha, iterations, epsilon, l)
+print("Theta = " , Linear_model_reg.theta.conj().T)
+print("Linear regression cost function = " , Linear_model_reg.costFunction(X, y, l),'\n')
+
+
+'''Logistic regression'''
+print("Logistic regression")
+
+print("Without Regularization")
+Logistic_model = Logistic_regression(theta)
+Logistic_model.gradientDescent(X, y, alpha, iterations, epsilon, 0)
+print("Theta = " , Logistic_model.theta.conj().T)
+print("Linear logistic cost function = " , Logistic_model.costFunction(X, y, 0),'\n')
+
+print("With Regularization ( lambda =", l,')')
+Logistic_model_reg = Logistic_regression(theta)
+Logistic_model_reg.gradientDescent(X, y, alpha, iterations, epsilon, l)
+print("Theta = " , Logistic_model_reg.theta.conj().T)
+print("Linear logistic cost function = " , Logistic_model_reg.costFunction(X, y, l),'\n')
 

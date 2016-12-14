@@ -1,0 +1,6 @@
+class Linear_regression(GLM):
+    def __init__(self, theta):
+        GLM.__init__(self, self.g, theta)
+        
+    def g(self, z):
+        return z

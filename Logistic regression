@@ -1,0 +1,13 @@
+import numpy as np
+
+class Logistic_regression(GLM):
+    def __init__(self, theta):
+        GLM.__init__(self, self.g, theta)
+        
+    def g(self, z):
+        return 1 / (1 + np.exp(-z) )
+        
+    def costFunction (self, X, y, l):
+        m = len(y)
+        return ((1 / m) * np.sum( - y * np.log(sigmoid(X.dot(self.theta))) - (1 - y) * np.log(1 - sigmoid(X.dot(self.theta))))) + self.regularization(l, m)['cost function reg']
+

@@ -1,0 +1,29 @@
+import numpy as np
+
+class GLM: #Generalized linear model
+    def __init__ (self, g, theta):
+        self.g = g
+        self.theta = theta
+        
+    def gradientDescent (self, X, y, alpha, num_iters, epsilon, l ): # Gradient Descent algoritm
+        m = len(y)
+        i = 0
+        while ((i < num_iters) and (self.costFunction(X, y, l) > epsilon)):
+            i += 1
+            dJ = self.gradient(X, y, l)
+            self.theta = self.theta - alpha * dJ
+        
+    def costFunction (self, X, y, l):
+        m = len(y)
+        d = self.g(X.dot(self.theta)) - y
+        return  d.conj().T.dot(d) / (2 * m) + self.regularization(l, m)['cost function reg']  
+        
+    def gradient(self, X, y, l):
+        m = len(y)
+        d = self.g(X.dot(self.theta)) - y
+        return X.conj().T.dot(self.g(X.dot(self.theta)) - y) / m + self.regularization(l, m)['gradient reg'] 
+    
+    def regularization(self, l, m):
+        return {'gradient reg': l * np.concatenate((np.array([[0]]),self.theta[1:len(self.theta)])) / m,\
+        'cost function reg': l * np.sum(self.theta[1:len(self.theta)] ** 2) / (2 * m)
+        }

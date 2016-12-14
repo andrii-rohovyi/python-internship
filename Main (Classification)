@@ -1,5 +1,5 @@
 import numpy as np
-data_location ='E:\dataset/spam.xlsx'
+data_location ='E:\dataset/svm.xlsx'
 data = Data(data_location)
 n = data.shape[1]
 m = len(data)
@@ -33,8 +33,8 @@ max_passes = 5
 C = 1
 sigma = 0.1
 print('Linear Kernel')
-model = svmTrain(X, y, C, linearKernel, sigma, tol, max_passes)
-print( svmPredict(model, X))
+linear_model = svmTrain(X, y, C, linearKernel, sigma, tol, max_passes)
+print( svmPredict(linear_model, X))
 print('Gaussian Kernel')
 model = svmTrain(X, y, C, gaussianKernel, sigma, tol, max_passes)
 print( svmPredict(model, X))

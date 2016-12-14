@@ -1,4 +1,5 @@
 import numpy, xlrd
+
 def Data (location):
     rb = xlrd.open_workbook(location)
     sheet = rb.sheet_by_index(0)
