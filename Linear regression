@@ -1,5 +1,0 @@
-def Linear(X, y, theta, l):
-    m = len(y)
-    d = X.dot(theta) - y
-    return d.conj().T.dot(d) / (2 * m) + l * np.sum(theta[1:len(theta)] ** 2) / (2 * m), \
-    X.conj().T.dot(X.dot(theta) - y) / m + l * np.concatenate((np.array([[0]]),theta[1:len(theta)])) / m  #cost function, gradient
