@@ -9,7 +9,7 @@ def GDA(X, y_train, X_test):
     X1 = (X - m0) * (1 - y_train) + (X - m1) * y_train
     for i in range(n):
         for j in range(n):
-            sigma[i][j] = sum(X1[:,[i]]*X1[:,[j]]) / len(X1)
+            sigma[i][j] = sum(X1[:, [i]]*X1[:, [j]]) / len(X1)
     p0 = N(X_test, m0 , sigma) * p(0, fi)
     p1 = N(X_test, m1 , sigma) * p(1, fi)
     return p1 > p0
@@ -18,4 +18,4 @@ def p(y_predictin, fi):
     return (fi ** y_predictin) * ((1 - fi) ** (1 - y_predictin))
 
 def N(X, mu, sigma):
-    return np.exp(-0.5 * np.sum((X - mu).dot(np.linalg.pinv(sigma)) * (X - mu), axis = 1)) / (((2 * np.pi) ** (len(sigma) / 2)) * (np.linalg.det(sigma) ** 0.5))
+    return np.exp(- 0.5 * np.sum((X - mu).dot(np.linalg.pinv(sigma)) * (X - mu), axis = 1)) / (((2 * np.pi) ** (len(sigma) / 2)) * (np.linalg.det(sigma) ** 0.5))

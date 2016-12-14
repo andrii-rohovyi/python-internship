@@ -1,0 +1,19 @@
+import numpy as np
+
+def NBC(X_train, y_train, X_test):
+    K = 1
+    p_y1 = (np.sum(y_train) + 1) / (len(y_train) + K)
+    p_y0 = 1 - p_y1
+    px_y1 = (sum(X_train * y_train) + 1) / (np.sum(y_train) + 2)
+    px_y0 = (sum(X_train * (1 - y_train)) + 1) / (np.sum(1 - y_train) + 2)
+    Product_px_y1 = np.ones((X_test.shape[0]))
+    Product_px_y0 = np.ones((X_test.shape[0]))
+    for i in range(X_test.shape[0]):
+        for j in range(X_test.shape[1]):
+            if(X_test[i, j] == 1):
+                Product_px_y1[i] = Product_px_y1[i] * px_y1[j]
+                Product_px_y0[i] = Product_px_y0[i] * px_y0[j]
+    prediction = np.zeros((X_test.shape[0]))
+    for i in range(X_test.shape[0]): 
+       prediction[i] = (Product_px_y1[i] * p_y1) / (Product_px_y1[i] * p_y1 + Product_px_y0[i] * p_y0) 
+    return prediction

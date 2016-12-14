@@ -3,10 +3,10 @@ import numpy as np
 def findClosestCentroids(X, centroids):
     idx = np.zeros((X.shape[0],1))
     for i in range(X.shape[0]):
-        min = (X[1]-centroids[1]).dot((X[1]-centroids[1]).conj().T)
+        min = (X[1] - centroids[1]).dot((X[1] - centroids[1]).conj().T)
         jmin = 0
         for j in range(centroids.shape[0]):
-            min1 = (X[i]-centroids[j]).dot((X[i]-centroids[j]).conj().T)
+            min1 = (X[i] - centroids[j]).dot((X[i] - centroids[j]).conj().T)
             if (min1 < min):
                 min = min1
                 jmin = j
@@ -23,8 +23,8 @@ def computeCentroids(X, idx, K):
             for j in range(m):
                 if(i==idx[j]):
                     c = c + 1
-                    centroids[i,k] = centroids[i,k] + X[j,k]
-            centroids[i,k] = centroids[i,k] / c
+                    centroids[i, k] = centroids[i, k] + X[j, k]
+            centroids[i,k] = centroids[i, k] / c
     return centroids
 
 def runkMeans(X, centroids, max_iter):

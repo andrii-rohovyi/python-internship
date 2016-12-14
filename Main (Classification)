@@ -1,34 +1,42 @@
 import numpy as np
-data_location ='E:\dataset/svm2.xlsx'
+data_location ='E:\dataset/spam.xlsx'
 data = Data(data_location)
 n = data.shape[1]
 m = len(data)
 if(n==2):
-    X = data[:, [n-2]]
+    X = data[:, [0]]
 else:
-    X =  data[:, [0,n-2]]
+    X =  data[:, : n-1]
 y = data[:, [n-1]]
-test_count = 80
+proc = 80
+test_count = int((proc / 100) * X.shape[0])
 X_train = X[:test_count, :]
 X_test = X[test_count:, :]
 y_train = y[:test_count]
 y_test = y[test_count:]
 
+'''Gaussian Discriminant Analysis'''
+print('Gaussian Discriminant Analysis')
+d = np.abs(y_test.T - GDA(X_train, y_train, X_test)).T
+print('(sum(y-predict) ^ 2) /  m =', d.conj().T.dot(d) / (len(y_test)))
+
+'''Naive Bayes Classifier'''
+print('Naive Bayes Classifier')
+alfa = 0.5
+predict = (NBC(X_train, y_train, X_test) > alfa) + 0
+print('(sum(y-predict) ^ 2) /  m =', np.sum(np.abs(y_test.T - predict)) ** 2 / y_test.shape[0]) 
+
+'''SVM'''
+print('SVM')
 tol = 1e-3
 max_passes = 5
 C = 1
 sigma = 0.1
-
-'''GDA'''
-print('GDA')
-d = np.abs(y_test.T -GDA(X_train, y_train, X_test)).T
-print('(sum(y-predict) ^ 2) /  m =',d.conj().T.dot(d) / (len(y_test)))
-
-'''SVM'''
-print('SVM')
 print('Linear Kernel')
 model = svmTrain(X, y, C, linearKernel, sigma, tol, max_passes)
 print( svmPredict(model, X))
 print('Gaussian Kernel')
 model = svmTrain(X, y, C, gaussianKernel, sigma, tol, max_passes)
 print( svmPredict(model, X))
+
+

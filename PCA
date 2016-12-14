@@ -5,10 +5,10 @@ def pca(X):
     U,S,Vh =np.linalg.svd(Sigma)
     return U,S
 def featureNormalize(X):
-    mu = X.mean(axis=0)
-    X_norm = X- mu
-    sigma = X.std(axis=0)
-    return X_norm/sigma
+    mu = X.mean(axis = 0)
+    X_norm = X - mu
+    sigma = X.std(axis = 0)
+    return X_norm / sigma
 def projectData(X, U, K):
-    U_reduce = U[:,0:K]
+    U_reduce = U[:, 0:K]
     return X.dot(U_reduce)
